@@ -42,21 +42,28 @@ namespace conway {
 
     template<typename array, typename mdspan>
     auto evolve( board<array, mdspan>& bd ) {
+        // loop through cells, excluding edge cells
         for ( size_t i = 1; i < bd.board_.static_extent( 0 ) - 1; i++ )
             for ( size_t j = 1; j < bd.board_.static_extent( 1 ) - 1; j++ ) {
                 unsigned live_neighbor_count{};
 
+                // loop through neighboring cells
                 for ( int k = -1; k <= 1; k++ )
                     for ( int l = -1; l <= 1; l++ )
+                        // skip over this cell
                         if ( k == l == 0 )
                             continue;
+                        // if neighboring cell is live, increment live neighbor count
                         else if ( bd.board_[ i + k, j + l].value_or( false ) )
                             live_neighbor_count++;
 
+                // this cell is live
                 if ( bd.board_[ i, j ].value() == 1 )
+                    // apply rule three
                     if ( live_neighbor_count != 2 && live_neighbor_count != 3  )
                         bd.board_[ i, j ] = 0;
                 else // this cell is dead
+                    // apply rule four
                     if ( live_neighbor_count == 3 )
                         bd.board_[ i, j ] = 1;
             }
