@@ -7,11 +7,15 @@
 #include <iostream>
 
 namespace conway {
+    using md5x5 = Kokkos::mdspan<std::optional<bool>, Kokkos::extents<size_t, 5, 5>>;
     using md6x6 = Kokkos::mdspan<std::optional<bool>, Kokkos::extents<size_t, 6, 6>>;
     using md7x8 = Kokkos::mdspan<std::optional<bool>, Kokkos::extents<size_t, 7, 8>>;
+    using a25 = std::array<std::optional<bool>, 25>;
     using a36 = std::array<std::optional<bool>, 36>;
     using a56 = std::array<std::optional<bool>, 56>;
 
+    extern a25 rule_one_0_before;
+    extern a25 rule_one_0_after;
     extern a36 block;
     extern a56 beehive;
 
@@ -29,13 +33,33 @@ namespace conway {
                             return false;
                 return true;
             }
+
+            friend auto evolve<array, mdspan>( board<array, mdspan>& bd );
         private:
             mdspan board_;
+
     };
 
     template<typename array, typename mdspan>
     auto evolve( board<array, mdspan>& bd ) {
-        return;
+        for ( size_t i = 1; i < bd.board_.static_extent( 0 ) - 1; i++ )
+            for ( size_t j = 1; j < bd.board_.static_extent( 1 ) - 1; j++ ) {
+                unsigned live_neighbor_count{};
+
+                for ( int k = -1; k <= 1; k++ )
+                    for ( int l = -1; l <= 1; l++ )
+                        if ( k == l == 0 )
+                            continue;
+                        else if ( bd.board_[ i + k, j + l].value_or( false ) )
+                            live_neighbor_count++;
+
+                if ( bd.board_[ i, j ].value() == 1 )
+                    if ( live_neighbor_count != 2 && live_neighbor_count != 3  )
+                        bd.board_[ i, j ] = 0;
+                else // this cell is dead
+                    if ( live_neighbor_count == 3 )
+                        bd.board_[ i, j ] = 1;
+            }
     }
 }
 
