@@ -1,24 +1,24 @@
+#ifndef CONWAY_H
+#define CONWAY_H
+
 #include <mdspan-stable/include/mdspan/mdspan.hpp>
 #include <array>
 #include <optional>
+#include <iostream>
 
 namespace conway {
     using md6x6 = Kokkos::mdspan<std::optional<bool>, Kokkos::extents<size_t, 6, 6>>;
+    using md7x8 = Kokkos::mdspan<std::optional<bool>, Kokkos::extents<size_t, 7, 8>>;
     using a36 = std::array<std::optional<bool>, 36>;
+    using a56 = std::array<std::optional<bool>, 56>;
 
-    a36 block =
-    {
-        std::nullopt, 0, 0, 0, 0, std::nullopt,
-                   0, 0, 0, 0, 0, 0,
-                   0, 0, 1, 1, 0, 0,
-                   0, 0, 1, 1, 0, 0,
-                   0, 0, 0, 0, 0, 0,
-        std::nullopt, 0, 0, 0, 0, std::nullopt
-    };
+    extern a36 block;
+    extern a56 beehive;
 
+    template<typename array, typename mdspan>
     class board {
         public:
-            board( a36 block ) :
+            board( array block ) :
                 board_( block.data() ) {
                     std::cout << "constructor called" << std::endl;
                 }
@@ -30,10 +30,13 @@ namespace conway {
                 return true;
             }
         private:
-            md6x6 board_;
+            mdspan board_;
     };
 
-    auto evolve( board bd ) {
+    template<typename array, typename mdspan>
+    auto evolve( board<array, mdspan>& bd ) {
         return;
     }
 }
+
+#endif
