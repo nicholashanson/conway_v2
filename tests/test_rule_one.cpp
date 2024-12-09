@@ -3,7 +3,7 @@
 
 /*
     Rule one: Any live cell with fewer than two live neighbors dies,
-    as of by underpopulation.
+    as if by underpopulation.
 */
 BOOST_AUTO_TEST_CASE( RuleOneTest )
 {
